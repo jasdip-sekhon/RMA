@@ -32,7 +32,7 @@ def _trim_to_header(lines, command):
     return lines[i:]
 
 
-def _pad_line_count(lines, command, lines_per_port):
+def _check_line_count(lines, command, lines_per_port):
     expected = 1
     if lines_per_port is not None:
         expected = lines_per_port
@@ -56,7 +56,7 @@ def format_output(prompt, command, lines, special, first, lines_per_port):
     if special == "header":
         block = _trim_to_header(lines, command)
     else:
-        lines = _pad_line_count(lines, command, lines_per_port)
+        lines = _check_line_count(lines, command, lines_per_port)
         if special == "skip_first_echo" and first:
             block = lines
         else:

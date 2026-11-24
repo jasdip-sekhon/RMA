@@ -27,16 +27,13 @@ If PowerShell blocks `Activate.ps1`, run
 
 ## Run
 
-From the `RMA` folder, with the virtual environment active (`(.venv)` in the prompt),
-choose the data rate:
+In the `RMA` folder, double-click the file for the data rate you're testing:
 
-```powershell
-python main.py 200G
-python main.py 400G
-python main.py 800G
-```
+- `Run 200G.bat`
+- `Run 400G.bat`
+- `Run 800G.bat`
 
-You'll see one line per step, then the file it saved:
+A window opens and shows one line per step, then the file it saved:
 
 ```
 Step-1 (SN) B3:B34: 32 commands
@@ -44,10 +41,20 @@ Step-2 (Clear status) B3:B34: 32 commands
 ...
 Step-6 (Line protocol) A2:A33: 32 commands
 Saved runs\200G_20261123_164351.xlsx
+
+Done. Open the file in Excel and save it once before sharing.
 ```
 
-A run takes a few minutes. It clears the switch's PHY counters as one of its steps, as the
-manual test does.
+The window stays open until you press a key, so you can read the result. A run takes a
+few minutes. It clears the switch's PHY counters as one of its steps, as the manual test
+does.
+
+You can also run it from a terminal in the `RMA` folder, with the virtual environment
+active (`(.venv)` in the prompt):
+
+```powershell
+python main.py 200G
+```
 
 ## Output
 
@@ -71,7 +78,7 @@ If a run stops, nothing is saved. Fix the cause and run it again from the start.
 | `Switch error on: <command> -> % ...` | The switch rejected the command. | Check the command in the template tab named in the message. |
 | `Header not found in output of: <command>` | A table command (DOM, `sho int sta`) returned no table. | Check the switch and the modules, then run again. |
 | `usage: python main.py 200G\|400G\|800G` | The data rate was missing or misspelled. | Run it again with `200G`, `400G` or `800G`. |
-| `FileNotFoundError: ... templates/...` | It was started outside the `RMA` folder. | `cd` into the `RMA` folder and run it again. |
+| `FileNotFoundError: ... templates/...` | It was started from a terminal outside the `RMA` folder. | Use the `Run ... .bat` files, or `cd` into the `RMA` folder first. |
 
 ## Tests
 
@@ -86,6 +93,7 @@ access. They run in a few seconds; run them after any change.
 
 | File | Purpose |
 | --- | --- |
+| `Run 200G.bat`, `Run 400G.bat`, `Run 800G.bat` | Double-click launchers |
 | `main.py` | Entry point; switch details (`SWITCHES`) and the run order |
 | `templates.py` | Each template's file and, per tab, where commands are read and output goes |
 | `excel.py` | Reads commands from the workbook, shapes the output, pastes it |
