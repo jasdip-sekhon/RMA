@@ -1,0 +1,27 @@
+# Virtual environments
+.venv/
+.venv-*/
+venv/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Script output
+runs/
+
+# Office lock files (created while a document is open)
+~$*
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
