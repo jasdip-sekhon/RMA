@@ -199,6 +199,23 @@ file never has to be chased backwards into another.
   (`netmiko>=4,<5`, `openpyxl>=3.1,<4`), so a fresh `pip install` can't pull a breaking
   release. *(pinned dependencies)*
 
+### Writing (comments, README, docs)
+
+- **Plain sentences.** Short, complete, everyday sentences with normal punctuation. No
+  semicolons, colon chains, arrows or clipped labels like "Note:". Check each piece of
+  writing against the 7 Cs: clear, concise, concrete, correct, coherent, complete and
+  courteous. *(7 Cs of communication)*
+- **The README is for the people who run the tool.** Order it the way they work through
+  it: what it is, what you need, setting up a new PC, running it, the output, what to do
+  when something goes wrong, tests, then the file layout. Design detail stays in this
+  file. *(README best practice)*
+- **Concrete and correct.** Use real commands, file names and error messages, and check
+  each one against the code or a real run before writing it down.
+- **No secrets, and no facts copied from the code.** No passwords. Point to where a fact
+  lives (`SWITCHES` in `main.py`) instead of repeating it, so it can't go stale.
+- **Keep the README current.** Any change to how the tool is set up or run, what it
+  saves, or what an error message says needs the README updated in the same commit.
+
 ## Layout
 
 ```
