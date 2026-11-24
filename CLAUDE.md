@@ -67,7 +67,7 @@ create_connection(SWITCHES[key])     one session for the whole run
 get_prompt(connection)               e.g. "7060DX4-32-F#"
         │
         ▼
-run_steps: for each step (a Step named tuple) in TEMPLATES[key]:      in run order
+run_steps: for each step (a Step dataclass) in TEMPLATES[key]:       in run order
     cmds = get_cmds_from_excel(wb, step.tab, step.commands)    commands may name a tab
     for j in range(len(cmds)):
         lines = run(connection, cmds[j])      timeout → RuntimeError naming the command
@@ -135,11 +135,12 @@ file never has to be chased backwards into another.
 - **Short functions, one job each.** Short and plain beats long and spelled out; if a
   function feels long, look for a simpler shape before adding helpers. *(Single
   Responsibility Principle, at function level)*
-- **Plain functions and data.** No classes, frameworks, or abstraction layers. Fixed facts
-  (steps, switches, template files) live in tables, not in `if template == ...` branches.
-  A step row is a `Step` named tuple (like a C struct: named fields, no methods), read as
-  `step.tab`, `step.paste`, etc. *(table-driven methods / data-driven design; Unix Rule
-  of Representation)*
+- **Plain functions and data.** No frameworks or abstraction layers, and no classes with
+  behaviour. The one kind of class allowed is a data-only `@dataclass(frozen=True)` with
+  no methods, like a C++ struct. Fixed facts (steps, switches, template files) live in
+  tables, not in `if template == ...` branches. A step row is a `Step` dataclass, read as
+  `step.tab`, `step.paste`, etc. Use `Optional[str]`, not `str | None`, to keep Python
+  3.8 support. *(table-driven methods / data-driven design; Unix Rule of Representation)*
 - **Each file imports what it uses itself.** Python imports are not inherited; never
   reach through another module (`excel.openpyxl`). Drop imports nothing uses.
   *(Include What You Use)*

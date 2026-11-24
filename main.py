@@ -30,7 +30,7 @@ def run_steps(connection, workbook, prompt, steps):
             blocks.append(block)
 
         if step.paste is None:
-            pass   # run only (e.g. clear counters)
+            pass   # The step only runs its commands, such as clearing counters.
         elif step.special == "columns":
             excel.paste_columns(workbook[step.tab], step.paste, blocks)
         else:

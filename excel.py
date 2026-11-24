@@ -1,4 +1,4 @@
-# 800G Result-5: each port's histogram goes in its own group of 5 columns (B, G, L, ...).
+# In 800G Result-5, each port's histogram goes in its own group of 5 columns.
 COLUMN_GROUP_WIDTH = 5
 
 
@@ -6,14 +6,14 @@ def _get_cell_text(workbook, sheet, coord):
     value = workbook[sheet][coord].value
     if value.startswith("="):
         ref_sheet, ref_coord = value[1:].split("!")
-        ref_sheet = ref_sheet.strip("'")   # 'META RMA CMD' -> META RMA CMD
+        ref_sheet = ref_sheet.strip("'")   # Excel puts quotes around sheet names with spaces.
         value = workbook[ref_sheet][ref_coord].value
     return value.strip()
 
 
 def get_cmds_from_excel(workbook, tab, cell_range):
     if "!" in cell_range:
-        # 800G keeps every command in one tab: "Test command!D3:D34"
+        # 800G keeps all its commands in the Test command tab.
         tab, cell_range = cell_range.split("!")
     cmds = []
     rows = workbook[tab][cell_range]
@@ -22,11 +22,11 @@ def get_cmds_from_excel(workbook, tab, cell_range):
     return cmds
 
 
-# Need to rebuild output with echo lines (netmiko strips them):
+# Netmiko removes the line that shows the command. A PuTTY paste has it, so add it back.
 #   7060DX4-32-F#show interfaces Et1/1 phy detail | grep -i SN
 #   └── prompt ─┘└──────────── command ──────────────────────┘
 def format_output(prompt, command, lines, special, first, lines_per_port):
-    # special and lines_per_port: see Step in templates.py
+    # See Step in templates.py for what special and lines_per_port mean.
     if special == "header":
         i = 0
         while i < len(lines) and not lines[i].startswith("Port"):
@@ -36,10 +36,9 @@ def format_output(prompt, command, lines, special, first, lines_per_port):
         block = lines[i:]
     else:
         if len(lines) < lines_per_port:
-            # An empty port (no module) prints nothing, or only part of its block (800G
-            # "grep -i SN" still prints the "Lane SNR" header). Placeholder lines, as many
-            # as one port normally prints, keep every later port on the row its formula
-            # reads; " " (not "") so Excel shows a blank rather than 0.
+            # A port with no module prints nothing, or only part of its output. Fill its
+            # rows with blanks so the ports after it stay on the right rows. Use a space,
+            # because a formula that points at an empty cell shows 0 in Excel.
             placeholder = []
             for i in range(lines_per_port):
                 placeholder.append(" ")
@@ -52,20 +51,17 @@ def format_output(prompt, command, lines, special, first, lines_per_port):
 
 
 def paste(worksheet, first_cell, lines):
-    # Writes lines down one column from first_cell. The workbook is always a blank
-    # template, so there is no old output to clear first.
+    # The template is blank, so there is nothing to clear first.
     row = worksheet[first_cell].row
     col = worksheet[first_cell].column
     for i in range(len(lines)):
         cell = worksheet.cell(row=row + i, column=col)
         cell.value = lines[i]
         if lines[i].startswith("="):
-            cell.data_type = "s"   # keep it as text; openpyxl would store it as a formula
+            cell.data_type = "s"   # Keep it as text, or openpyxl saves it as a formula.
 
 
 def paste_columns(worksheet, first_cell, blocks):
-    # One block (port) per column group: block i goes down the column COLUMN_GROUP_WIDTH * i
-    # to the right of first_cell, starting on first_cell's row.
     row = worksheet[first_cell].row
     col = worksheet[first_cell].column
     for i in range(len(blocks)):
