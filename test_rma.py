@@ -378,6 +378,24 @@ def test_format_output_full_output_is_kept_as_is():
 
 
 
+def test_format_output_more_lines_than_expected_raises_naming_command():
+    # One extra line would shift every later port onto the wrong row, so the run stops.
+    lines = ["  Transceiver SN   SN01", "  an extra line"]
+    with pytest.raises(ValueError, match="show x"):
+        excel.format_output(PROMPT, "show x", lines, None, False, 1)
+
+
+def test_format_output_any_length_step_keeps_all_lines():
+    # lines_per_port None is for tables and histograms, which can be any length.
+    block = excel.format_output(PROMPT, "show x", ["a", "b", "c"], None, False, None)
+    assert block == [PROMPT + "show x", "a", "b", "c"]
+
+
+def test_format_output_any_length_step_with_no_output_gets_one_blank_line():
+    block = excel.format_output(PROMPT, "show x", [], None, False, None)
+    assert block == [PROMPT + "show x", " "]
+
+
 # ---------- excel.paste_columns ----------
 
 def test_paste_columns_puts_each_block_down_its_own_column_group():
@@ -892,3 +910,25 @@ def test_replay_800g_sample_gives_the_same_summary_inputs():
     compared, mismatches = _summary_mismatches(result, sample, ["C", "F", "G"])
     assert compared == 96
     assert mismatches == []
+
+
+def _fake_reply_port7_extra_sn_line(cmd):
+    # Like _fake_switch_reply, but port 7's SN grep matches one line too many.
+    reply = _fake_switch_reply(cmd)
+    if cmd.endswith("grep -i SN") and _port_of(cmd) == 7:
+        reply = reply + "\n  Another line that matches SN"
+    return reply
+
+
+def test_run_steps_200g_extra_output_line_stops_the_run():
+    workbook = openpyxl.load_workbook(templates.TEMPLATE_FILES["200G"])
+    connection = _fake_connection(_fake_reply_port7_extra_sn_line)
+    with pytest.raises(ValueError, match="Et7/1"):
+        main.run_steps(connection, workbook, PROMPT, templates.TEMPLATES["200G"])
+
+
+def test_templates_200g_step6_expects_20_lines_per_port():
+    # Step-6 formulas read every 21st row: a command line plus exactly 20 lines per port.
+    step = templates.TEMPLATES["200G"][5]
+    assert step.tab == "Step-6 (Line protocol)"
+    assert step.lines_per_port == 20

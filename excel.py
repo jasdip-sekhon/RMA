@@ -35,12 +35,17 @@ def format_output(prompt, command, lines, special, first, lines_per_port):
             raise ValueError("Header not found in output of: " + command)
         block = lines[i:]
     else:
-        if len(lines) < lines_per_port:
-            # A port with no module prints nothing, or only part of its output. Fill its
-            # rows with blanks so the ports after it stay on the right rows. Use a space,
-            # because a formula that points at an empty cell shows 0 in Excel.
+        expected = 1
+        if lines_per_port is not None:
+            expected = lines_per_port
+            if len(lines) > expected:
+                # An extra line would shift every later port onto the wrong row.
+                raise ValueError("Expected " + str(expected) + " line(s) per port, got "
+                                 + str(len(lines)) + " from: " + command)
+        if len(lines) < expected:
+            # Pad an empty port with spaces, so later ports stay put and Excel shows blank, not 0.
             placeholder = []
-            for i in range(lines_per_port):
+            for i in range(expected):
                 placeholder.append(" ")
             lines = placeholder
         if special == "skip_first_echo" and first:

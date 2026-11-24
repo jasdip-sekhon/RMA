@@ -235,10 +235,16 @@ The output must look like a PuTTY paste, row for row; formulas read it by fixed 
 - Never write a cell whose value starts with `=`.
 - **Never add or drop a line inside a block:** one missing/extra line shifts every later
   port, and the Summary silently pairs results with the wrong SN.
+- **`lines_per_port` is exact.** It defaults to 1. A step whose output can be any length
+  (a histogram) opts out with `None`; `header` steps are never checked. Only 400G Step-7
+  and 800G Result-5 use `None`, and 200G Step-6 states its 20.
+- **Too many lines stop the run** with a `ValueError` naming the command and both counts.
+  One extra line would shift every later port, and the Summary would pair results with
+  the wrong SN. New rows are checked unless someone deliberately writes `None`.
 - **One exception, empty ports:** a command that prints fewer lines than the step's
-  `lines_per_port` (1 unless a row says otherwise) is treated as an empty port: its whole
-  block becomes `lines_per_port` placeholder lines `" "`, so later ports stay aligned and
-  the Summary shows a blank for that port. This covers "nothing printed" and partial output (no
+  `lines_per_port` (1 for `None` steps) is treated as an empty port: its whole block
+  becomes that many placeholder lines `" "`, so later ports stay aligned and the Summary
+  shows a blank for that port. This covers "nothing printed" and partial output (no
   module on 800G: `grep -i SN` prints only the `Lane SNR` line, 1 of 2); the partial
   lines are dropped. It is `" "`, not `""`: openpyxl saves `""` as an empty cell, which
   Excel formulas show as `0`. Doesn't apply to `"header"` steps (missing header → error).
