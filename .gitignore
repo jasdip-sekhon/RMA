@@ -14,7 +14,6 @@ __pycache__/
 .env.*
 
 # Script output
-runs/
 
 # Office lock files (created while a document is open)
 ~$*

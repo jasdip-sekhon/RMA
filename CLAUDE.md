@@ -241,9 +241,17 @@ RMA/
 ├── excel.py         # read commands from the workbook, shape output, paste it back
 ├── ssh.py           # netmiko connection + run one command
 ├── requirements.txt # netmiko, openpyxl, pytest
-├── test_rma.py      # unit tests (pytest)
+├── pytest.ini       # tells pytest the tests are in tests/ and the code is in this folder
 ├── templates/       # blank .xlsx masters (never written to by a run)
-└── tests/           # fixtures: 400G_sample.xlsx, 800G_sample.xlsx (masters with sample output)
+└── tests/
+    ├── fakes.py         # fake switch pieces shared by more than one test file
+    ├── test_excel.py    # one test file per module
+    ├── test_ssh.py
+    ├── test_templates.py
+    ├── test_main.py     # main.py, except run_steps
+    ├── test_run_steps.py  # every template's steps on a fake switch
+    ├── test_replay.py   # recorded real output replayed through run_steps
+    └── data/            # 400G_sample.xlsx, 800G_sample.xlsx (masters with sample output)
 ```
 
 Results go outside the repo, to `RESULTS_FOLDER` in `main.py` (`Documents\RMA results`).
@@ -294,7 +302,7 @@ The output must look like a PuTTY paste, row for row; formulas read it by fixed 
 - **Fixed:** the 400G master held sample output in its paste columns (Step-1/3/4 col G,
   Step-5/6/7 col D, up to row 673), which `paste` (no clearing) would have left below
   shorter real output. Blanked by editing only those cells' XML; formulas, formatting and
-  every other part unchanged. The original, with the sample, is `tests/400G_sample.xlsx`.
+  every other part unchanged. The original, with the sample, is `tests/data/400G_sample.xlsx`.
   All masters are now blank in their paste columns; keep them that way.
 - **Not a typo:** the 800G port list goes `…17, 19, 21…` on purpose. On the lab switch,
   port 18 is a single 800G port (`Et18/2`–`8` inactive; the user thinks it may be
@@ -302,7 +310,7 @@ The output must look like a PuTTY paste, row for row; formulas read it by fixed 
   briefly broke Result-1 (1 lane instead of 8) and was reverted. If port 18 is repaired
   and re-split, `Test command` row 12 and Result-5 `AU3`/`AU4` are the 10 cells to change.
 - **Fixed:** the 800G master's Result tabs held sample output; blanked like 400G's
-  (Result-5 rows 2–4 kept). The original is `tests/800G_sample.xlsx`.
+  (Result-5 rows 2–4 kept). The original is `tests/data/800G_sample.xlsx`.
 - 800G `Test command` col H alternates `grep -i Interface` / `grep -i  Interface` (one or
   two spaces) by row; harmless to EOS, sent verbatim.
 - `Et1/1-$` in TH5/DX5 commands is a native EOS range (one command returns all lanes);
@@ -313,9 +321,12 @@ The output must look like a PuTTY paste, row for row; formulas read it by fixed 
 
 ## Testing
 
-**Unit tests:** `test_rma.py`, run from the `RMA` folder with `pytest` (install once with
-`pip install -r requirements.txt`). Plain test functions and `assert`, no classes;
-one behaviour per test, named after it; fakes are plain functions in a `SimpleNamespace`.
+**Unit tests:** in `tests/`, one file per module, run from the `RMA` folder with `pytest`
+(install once with `pip install -r requirements.txt`). Plain test functions and `assert`,
+no classes; one behaviour per test, named after it; fakes are plain functions in a
+`SimpleNamespace`. A helper used by one test file stays in that file. Only helpers used by
+several files go in `tests/fakes.py`, which test files import by name (`from fakes import
+...`). No `conftest.py`, so every helper a test uses is visible in its imports.
 Tests may import netmiko (to fake its errors); app code still may not, outside `ssh.py`.
 Add a `run_steps` test for each new row in `TEMPLATES`. Run `pytest` after every change.
 
@@ -329,15 +340,15 @@ Every function with behaviour of its own has a test, including error paths (e.g.
 failure disconnects and re-raises; a bad argument prints the usage message). Prove a new
 test can fail before trusting it.
 
-**Replay tests** (in `test_rma.py`, part of every `pytest` run): real output a person
+**Replay tests** (in `tests/test_replay.py`, part of every `pytest` run): real output a person
 pasted from a real switch is split back into (command → output lines) at the echo lines,
 replayed through `run_steps` into the blank master by a fake switch, and every Summary
 cell is followed through its formulas to the cell it finally reads, which must equal the
 sample. Summary formulas only copy cells, so equal inputs mean an equal Summary; no Excel
 recalculation is needed.
 
-- 400G: `tests/400G_sample.xlsx`, Summary C, F, G, H, I → **0 mismatches of 160**.
-- 800G: `tests/800G_sample.xlsx` (Result-2, Result-3), Summary C, F, G → **0 of 96**.
+- 400G: `tests/data/400G_sample.xlsx`, Summary C, F, G, H, I → **0 mismatches of 160**.
+- 800G: `tests/data/800G_sample.xlsx` (Result-2, Result-3), Summary C, F, G → **0 of 96**.
   Confirms on real output: 400G case temp is 1 line per port; 800G SN is 2 lines
   (`Transceiver SN` + `Lane SNR`) per port with a module.
 - 200G: no recorded workbook in the project (`200G_FR4_158pcs_RMAIW20260907001_LOT1_

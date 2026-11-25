@@ -128,8 +128,8 @@ access. They take a few seconds. Run them after any change.
 | `templates.py`                                     | Each template's file and, per tab, where commands are read and output goes   |
 | `excel.py`                                         | Reads commands from the workbook, shapes the output, pastes it               |
 | `ssh.py`                                           | Connects to the switch and runs one command                                  |
-| `test_rma.py`                                      | Tests                                                                        |
+| `pytest.ini`                                       | Tells pytest where the tests and the code are                                |
 | `requirements.txt`                                 | The Python packages, installed in setup step 4                               |
 | `templates\`                                       | The blank Excel masters. A run reads them and never changes them             |
-| `tests\`                                           | Recorded sample workbooks from real switches, used by the tests              |
+| `tests\`                                           | The tests, one file per module. `tests\data\` holds recorded sample workbooks from real switches |
 | `CLAUDE.md`                                        | Design rules, paste-format rules and template details, for changing the code |
