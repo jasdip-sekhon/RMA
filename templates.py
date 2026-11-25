@@ -28,7 +28,7 @@ TEMPLATES = {
     "200G": [
         #    tab                       commands  paste special            lines
         Step("Step-1 (SN)",            "B3:B34", "G2", None),                   # N2 = G3 .. G65
-        Step("Step-2 (Clear status)",  "B3:B34", None, None),                   # Pastes nothing
+        Step("Step-2 (Clear status)",  "B3:B34", None, None),                   # Clears counters
         Step("Step-3 (Link Status)",   "B3:B34", "G2", None),                   # O2 = G3 .. G65
         Step("Step-4 (Pre-FEC BER)",   "B3:B34", "G2", None),                   # O2 = G3 .. G65
         Step("Step-5 (DOM)",           "A5:A5",  "D5", "header"),               # No formulas
@@ -37,7 +37,7 @@ TEMPLATES = {
     "400G": [
         #    tab        commands  paste special            lines
         Step("Step-1",  "B3:B34", "G2", None),                     # N2 = G3 .. G65
-        Step("Step-2",  "B3:B34", None, None),                     # Pastes nothing
+        Step("Step-2",  "B3:B34", None, None),                     # Clears counters
         Step("Step-3",  "B2:B2",  "G2", "header"),                 # O2 = G3 .. G34, one table
         Step("Step-4 ", "B3:B34", "G2", None),                     # O2 = G3 .. G65
         Step("Step-5",  "A5:A5",  "D5", "header"),                 # No formulas
@@ -49,7 +49,7 @@ TEMPLATES = {
         # 8 lanes. Only Result-2 and Result-3 feed the Summary. Summary F reads Result-2
         # B3, B5 .. B65. Summary C reads Result-5 row 2, which reads Result-3 B3, B6 .. B96.
         #    tab             commands               paste special    lines_per_port
-        Step("Test command", "B3:B34",              None, None),           # Clear counters
+        Step("Test command", "B3:B34",              None, None),           # Clears counters
         Step("Result-1",     "Test command!D3:D34", "B2", None,      8),   # Pre-FEC BER
         Step("Result-1",     "Test command!H3:H34", "F2", None,      8),   # Link status
         Step("Result-1",     "Test command!M3:M34", "K2", None,      8),   # SNR

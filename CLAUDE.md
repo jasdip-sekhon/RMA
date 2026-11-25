@@ -43,7 +43,7 @@ There is also a SONiC box (`device_type: linux`) used for SSH testing.
 
 ### Environment
 
-- Python 3.8+
+- Python 3.10+ (pytest 9 and current netmiko 4.x need it)
 - netmiko 4.x (needed for `ReadTimeout`)
 - openpyxl 3.1+
 - SSH access to the lab switches
@@ -139,8 +139,8 @@ file never has to be chased backwards into another.
   behaviour. The one kind of class allowed is a data-only `@dataclass(frozen=True)` with
   no methods, like a C++ struct. Fixed facts (steps, switches, template files) live in
   tables, not in `if template == ...` branches. A step row is a `Step` dataclass, read as
-  `step.tab`, `step.paste`, etc. Use `Optional[str]`, not `str | None`, to keep Python
-  3.8 support. *(table-driven methods / data-driven design; Unix Rule of Representation)*
+  `step.tab`, `step.paste`, etc. Write optional types as `Optional[str]`, as the code
+  already does. *(table-driven methods / data-driven design; Unix Rule of Representation)*
 - **Each file imports what it uses itself.** Python imports are not inherited; never
   reach through another module (`excel.openpyxl`). Drop imports nothing uses.
   *(Include What You Use)*
@@ -148,8 +148,7 @@ file never has to be chased backwards into another.
   module-level constants (`SWITCHES`, `TEMPLATES`), leading `_` for helpers used only in
   their own file, 4-space indents, two blank lines between top-level functions.
   *(PEP 8)*
-- **Comments explain why, not what.** Say what the code can't: which formula reads a
-  cell, why a step skips an echo, why a line is forced to text. Don't restate the code.
+- **Comments explain why, not what.** See *Writing* below.
 
 ### Safety rules (MISRA C principles that carry over to Python)
 
@@ -199,12 +198,25 @@ file never has to be chased backwards into another.
   (`netmiko>=4,<5`, `openpyxl>=3.1,<4`), so a fresh `pip install` can't pull a breaking
   release. *(pinned dependencies)*
 
-### Writing (comments, README, docs)
+### Writing code comments
 
-- **Plain sentences.** Short, complete, everyday sentences with normal punctuation. No
-  semicolons, colon chains, arrows or clipped labels like "Note:". Check each piece of
-  writing against the 7 Cs: clear, concise, concrete, correct, coherent, complete and
-  courteous. *(7 Cs of communication)*
+- **Comment only what the code can't say.** That means why something is done, which
+  formula reads a cell, or a surprise in the switch output. If a comment repeats the
+  code, delete it. *(Ousterhout, A Philosophy of Software Design, ch. 13)*
+- **Block comments are complete sentences. Inline comments can be short labels**, such
+  as `# Pre-FEC BER` or `# N2 = G3 .. G65` in a table. Keep comments up to date with the
+  code. *(PEP 8, Comments)*
+- **A small diagram is fine** when it shows something more clearly than words, like the
+  prompt and command layout above `format_output`.
+- **Few comments.** Don't spend effort polishing the wording of a comment. Spend it on
+  whether the comment is needed at all.
+
+### Writing the README and docs
+
+- **Plain sentences.** Short, everyday sentences in the second person and present tense.
+  Avoid semicolons, colon chains and clipped labels like "Note:". Read it over once
+  against the 7 Cs (clear, concise, concrete, correct, coherent, complete, courteous) as
+  a final check. *(Google developer documentation style guide; plain language, ISO 24495-1)*
 - **The README is for the people who run the tool.** Order it the way they work through
   it: what it is, what you need, setting up a new PC, running it, the output, what to do
   when something goes wrong, tests, then the file layout. Design detail stays in this

@@ -1,8 +1,7 @@
 # Tests for the RMA tool. They need no switch. Run them from the RMA folder with pytest.
 #
-# Each test checks one behaviour and is named after it. Each sets up, acts, then checks.
-# The fake switches are plain functions in a SimpleNamespace, used in place of a
-# netmiko connection.
+# Each test checks one behaviour and is named after it. The fake switches are plain
+# functions in a SimpleNamespace, used in place of a netmiko connection.
 
 import re
 from types import SimpleNamespace

@@ -7,7 +7,7 @@ before.
 
 ## What you need
 
-- Python 3.8 or later
+- A Windows PC with Python 3.10 or later
 - Git for Windows, to get the code
 
 ## Set up on a new PC
@@ -43,8 +43,8 @@ Do this once on each PC.
    ```
 
    Every test should pass.
-6. **Connect to the lab network** (`Innolight-Lab`) and check the switch answers, for
-   example `ping 192.168.11.220`.
+6. **Connect to the lab network** (`Innolight-Lab`) and check the switch answers. Its
+   address is in `SWITCHES` in `main.py`. Run `ping` with that address.
 
 ### Getting updates
 
@@ -95,16 +95,16 @@ You can also run it from a terminal in the `RMA` folder:
 
 If a run stops, nothing is saved. Fix the cause and run it again from the start.
 
-| Message                                                | What it means                                                                                     | What to do                                                                                                |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `TCP connection to device failed`                    | The switch didn't answer.                                                                         | Check you're on the lab network and the switch is up (`ping` its address).                              |
-| `Authentication to device failed`                    | The username or password was refused.                                                             | Check the switch's entry in `SWITCHES` in `main.py`.                                                  |
-| `Timed out on: <command>`                            | The switch took longer than 10 s to answer that command.                                          | Check the switch is still reachable, then run again.                                                      |
-| `Switch error on: <command> -> % ...`                | The switch rejected the command.                                                                  | Check the command in the template tab named in the message.                                               |
-| `Header not found in output of: <command>`           | A table command (DOM, `sho int sta`) returned no table.                                         | Check the switch and the modules, then run again.                                                         |
-| `Expected 1 line(s) per port, got 2 from: <command>` | A port printed more lines than the template expects, so its results would land on the wrong rows. | Don't run it again. Report it, because the switch output has changed and `templates.py` needs updating. |
-| `usage: python main.py 200G\|400G\|800G`               | The data rate was missing or misspelled.                                                          | Run it again with `200G`, `400G` or `800G`.                                                         |
-| `FileNotFoundError: ... templates/...`               | It was started from a terminal outside the `RMA` folder.                                        | Use the `Run ... .bat` files, or `cd` into the `RMA` folder first.                                  |
+| Message                                                | What it means                                                                                     | What to do                                                                                                                               |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `TCP connection to device failed`                    | The switch didn't answer.                                                                         | Check you're on the lab network and the switch is up (`ping` its address).                                                             |
+| `Authentication to device failed`                    | The username or password was refused.                                                             | Check the switch's entry in `SWITCHES` in `main.py`.                                                                                 |
+| `Timed out on: <command>`                            | The switch took longer than 10 s to answer that command.                                          | Check the switch is still reachable, then run again.                                                                                     |
+| `Switch error on: <command> -> % ...`                | The switch rejected the command.                                                                  | Check the command in the template tab named in the message.                                                                              |
+| `Header not found in output of: <command>`           | A table command (DOM, `sho int sta`) returned no table.                                         | Check the switch and the modules, then run again.                                                                                        |
+| `Expected 1 line(s) per port, got 2 from: <command>` | A port printed more lines than the template expects, so its results would land on the wrong rows. | Don't run it again. Report it to whoever maintains this tool, because the switch output has changed and `templates.py` needs updating. |
+| `usage: python main.py 200G\|400G\|800G`               | The data rate was missing or misspelled.                                                          | Run it again with `200G`, `400G` or `800G`.                                                                                        |
+| `FileNotFoundError: ... templates/...`               | It was started from a terminal outside the `RMA` folder.                                        | Use the `Run ... .bat` files, or `cd` into the `RMA` folder first.                                                                 |
 
 ## Tests
 
@@ -126,5 +126,9 @@ access. They take a few seconds. Run them after any change.
 | `templates.py`                                     | Each template's file and, per tab, where commands are read and output goes   |
 | `excel.py`                                         | Reads commands from the workbook, shapes the output, pastes it               |
 | `ssh.py`                                           | Connects to the switch and runs one command                                  |
-| `test_rma.py`                                      | Tests. The `tests\` folder holds the recorded sample workbooks             |
+| `test_rma.py`                                      | Tests                                                                        |
+| `requirements.txt`                                 | The Python packages, installed in setup step 4                               |
+| `templates\`                                       | The blank Excel masters. A run reads them and never changes them             |
+| `runs\`                                            | The filled-in results, one file per run                                      |
+| `tests\`                                           | Recorded sample workbooks from real switches, used by the tests              |
 | `CLAUDE.md`                                        | Design rules, paste-format rules and template details, for changing the code |
