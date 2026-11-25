@@ -33,7 +33,8 @@ There is also a SONiC box (`device_type: linux`) used for SSH testing.
   PuTTY paste, so the workbook's fixed-position formulas keep working (see
   *Paste format rules*).
 - **Never overwrite the template.** Save a new `<key>_<YYYYmmdd_HHMMSS>.xlsx` (e.g.
-  `200G_20261123_143005.xlsx`) in `runs/`; the masters in `templates/` are only ever read.
+  `200G_20261123_143005.xlsx`) in `RESULTS_FOLDER` (`Documents\RMA results`), then open it
+  in Excel; the masters in `templates/` are only ever read.
 - **Fail loudly, no retries.** Any connection, enable, or command failure raises an
   ordinary exception (naming the host or command) that stops the run with a traceback.
   Helpers never call `SystemExit`; only `main.py` decides how the run ends. Never retry,
@@ -81,7 +82,10 @@ run_steps: for each step (a Step dataclass) in TEMPLATES[key]:       in run orde
 ssh.close(connection)                in finally
         │
         ▼
-save runs/<key>_<YYYYmmdd_HHMMSS>.xlsx
+save RESULTS_FOLDER/<key>_<YYYYmmdd_HHMMSS>.xlsx
+        │
+        ▼
+os.startfile(out)                    opens it in Excel, which must save it once
 ```
 
 ### File boundaries
@@ -232,16 +236,17 @@ file never has to be chased backwards into another.
 
 ```
 RMA/
-├── main.py          # SWITCHES + main(): open template, connect, run steps in order, save copy
+├── main.py          # SWITCHES, RESULTS_FOLDER + main(): open template, connect, run steps, save copy, open it
 ├── templates.py     # per template: its .xlsx file, where each tab's commands are, where output goes
 ├── excel.py         # read commands from the workbook, shape output, paste it back
 ├── ssh.py           # netmiko connection + run one command
 ├── requirements.txt # netmiko, openpyxl, pytest
 ├── test_rma.py      # unit tests (pytest)
 ├── templates/       # blank .xlsx masters (never written to by a run)
-├── tests/           # fixtures: 400G_sample.xlsx, 800G_sample.xlsx (masters with sample output)
-└── runs/            # filled copies, one per run (timestamped)
+└── tests/           # fixtures: 400G_sample.xlsx, 800G_sample.xlsx (masters with sample output)
 ```
+
+Results go outside the repo, to `RESULTS_FOLDER` in `main.py` (`Documents\RMA results`).
 
 ## Paste format rules (why the formulas work)
 

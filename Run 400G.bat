@@ -10,7 +10,7 @@ if errorlevel 1 (
     echo The run stopped. The message above says why, and nothing was saved.
 ) else (
     echo.
-    echo Done. Open the file in Excel and save it once before sharing.
+    echo Done. The result is open in Excel. Save it once before sharing.
 )
 echo.
 pause

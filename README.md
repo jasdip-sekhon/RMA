@@ -66,13 +66,13 @@ Step-1 (SN) B3:B34: 32 commands
 Step-2 (Clear status) B3:B34: 32 commands
 ...
 Step-6 (Line protocol) A2:A33: 32 commands
-Saved runs\200G_20261123_164351.xlsx
+Saved C:\Users\<you>\Documents\RMA results\200G_20261123_164351.xlsx
 
-Done. Open the file in Excel and save it once before sharing.
+Done. The result is open in Excel. Save it once before sharing.
 ```
 
-The window stays open until you press a key, so you can read the result. A run takes a
-few minutes. It clears the switch's PHY counters as one of its steps, as the manual test
+When the run finishes, the result opens in Excel. The window stays open until you press
+a key, so you can read what it did. A run takes a few minutes. It clears the switch's PHY counters as one of its steps, as the manual test
 does.
 
 You can also run it from a terminal in the `RMA` folder:
@@ -83,11 +83,13 @@ You can also run it from a terminal in the `RMA` folder:
 
 ## Output
 
-- Each run saves a new file in `runs\`, named `<rate>_<YYYYmmdd_HHMMSS>.xlsx`.
-  Rename it as you normally would (for example with the RMA and lot number).
+- Each run saves a new file in the **`RMA results`** folder inside your `Documents`
+  folder, named `<rate>_<YYYYmmdd_HHMMSS>.xlsx`. The folder is created on the first run.
+  Rename the file as you normally would, for example with the RMA and lot number.
 - The templates in `templates\` are only read, never changed.
-- **Open the file in Excel and save it once before sharing.** The Summary's formulas are
-  calculated when Excel opens the file.
+- **Save the file once in Excel before sharing.** The run opens it in Excel for you.
+  Excel calculates the Summary's formulas when it opens the file, and saving keeps the
+  results.
 - A port with no module shows as blank in the Summary. Every other port stays on its
   own row.
 
@@ -122,13 +124,12 @@ access. They take a few seconds. Run them after any change.
 | File                                                 | Purpose                                                                      |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `Run 200G.bat`, `Run 400G.bat`, `Run 800G.bat` | Double-click launchers                                                       |
-| `main.py`                                          | Entry point, with the switch details (`SWITCHES`) and the run order        |
+| `main.py`                                          | Entry point, with the switch details (`SWITCHES`), the results folder (`RESULTS_FOLDER`) and the run order |
 | `templates.py`                                     | Each template's file and, per tab, where commands are read and output goes   |
 | `excel.py`                                         | Reads commands from the workbook, shapes the output, pastes it               |
 | `ssh.py`                                           | Connects to the switch and runs one command                                  |
 | `test_rma.py`                                      | Tests                                                                        |
 | `requirements.txt`                                 | The Python packages, installed in setup step 4                               |
 | `templates\`                                       | The blank Excel masters. A run reads them and never changes them             |
-| `runs\`                                            | The filled-in results, one file per run                                      |
 | `tests\`                                           | Recorded sample workbooks from real switches, used by the tests              |
 | `CLAUDE.md`                                        | Design rules, paste-format rules and template details, for changing the code |
